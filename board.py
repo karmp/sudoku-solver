@@ -1,7 +1,7 @@
 from typing import List, Optional
 
-class SudokuBoard:
-    """Sudoku Board class that stores a sudoku board. Member functions
+class Sudoku:
+    """Sudoku class that stores a sudoku board. Member functions
     can be called on to solve the stored board, print the board, get the
     board, or replace the board.
     """
@@ -84,9 +84,12 @@ class SudokuBoard:
                     return False
         return True
 
-    def solve_board(self):
+    def solve_board(self) -> bool:
         """Solves the board using backtracking algorithm. Updates the member variable
         with the solved board.
+
+        Returns:
+            True if successfully found solution, False otherwise.
         """
         found_cell = self._find_empty_cell()
         
@@ -113,9 +116,14 @@ class SudokuBoard:
     def set_board(self, board: List[List[int]]):
         """Sets the sudoku board. Must be a 9x9 sudoku board."""
         self._board = board
+
+
+    def place_value(self, row_index: int, col_index: int, num: int) -> None:
+        """Places a value on the board."""
+        self._board[row_index][col_index] = num
     
 if __name__ == "__main__":
-    board = SudokuBoard()
+    board = Sudoku()
     board.print_board()
     board.solve_board()
     print("\n\n")
