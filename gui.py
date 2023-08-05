@@ -1,6 +1,6 @@
 import pygame, sys, copy
 from sudoku import Sudoku
-import tkinter as tk
+from tkinter import filedialog, messagebox, Tk
 from typing import List
 
 # Constants for the game window
@@ -37,14 +37,14 @@ def draw_board(game_screen: pygame.display, solve_button_coord: tuple[int, int],
         pygame.draw.line(game_screen, BLACK, (0, i * CELL_SIZE), (SCREEN_WIDTH, i * CELL_SIZE), line_thickness)
         pygame.draw.line(game_screen, BLACK, (i * CELL_SIZE, 0), (i * CELL_SIZE, SCREEN_HEIGHT - CELL_SIZE), line_thickness)
     
-    pygame.draw.rect(game_screen, BLACK, (solve_button_x, solve_button_y, 80, 30), 3)
-    pygame.draw.rect(game_screen, BLACK, (upload_box_x, upload_box_y, 90, 30), 3)
+    pygame.draw.rect(game_screen, BLACK, (solve_button_x, solve_button_y, 90, 30), 2)
+    pygame.draw.rect(game_screen, BLACK, (upload_box_x, upload_box_y, 98, 30), 2)
 
     font = pygame.font.SysFont("Comic Sans", 14)
     solve_rect_text = font.render("Solve Board", True, BLACK)
     upload_text = font.render("Upload Image", True, BLACK)
-    game_screen.blit(solve_rect_text, (solve_button_x , solve_button_y))
-    game_screen.blit(upload_text, (upload_box_x, upload_box_y))
+    game_screen.blit(solve_rect_text, (solve_button_x + 5 , solve_button_y))
+    game_screen.blit(upload_text, (upload_box_x + 5, upload_box_y))
 
 
 def draw_numbers(game_screen: pygame.display, board: List[List[int]]):
@@ -113,6 +113,15 @@ def draw_incorrect_input(game_screen: pygame.display) -> None:
     pygame.draw.line(game_screen, INCORRECT_COLOR, (0, SCREEN_HEIGHT - 50), (50, SCREEN_HEIGHT), 3)
     pygame.draw.line(game_screen, INCORRECT_COLOR, (0, SCREEN_HEIGHT), (50, SCREEN_HEIGHT - 50), 3)
 
-def upload_and_process_image(sudoku: Sudoku):
-    pass
-
+def process_image(game_screen: pygame.display, sudoku: Sudoku) -> None:
+    """Prompts user to upload an image file. Stores the file path of the image and processes
+    the image and converts it into a nested list that will be used to update the board of
+    Sudoku object.
+    
+    Args:
+        game_screen: pygame display object that the board will be draw on.
+        sudoku: An instance of the Sudoku class.
+    """
+    filename = filedialog.askopenfilename()
+    if filename[-3:] not in ["png", "jpg", "jpeg"]:
+        messagebox.showinfo("Invalid file.", "Please upload a .png or .jpg file.")

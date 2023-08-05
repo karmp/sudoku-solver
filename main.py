@@ -14,8 +14,8 @@ def main() -> None:
     # Set up variables
     selected_row, selected_col = 0, 0
     correct_input = 0
-    solve_button_x = (SCREEN_WIDTH // 2) - 40
-    solve_button_y = SCREEN_HEIGHT - 40
+    solve_button_x = (SCREEN_WIDTH // 2) - 45
+    solve_button_y = SCREEN_HEIGHT - 45
     upload_box_x = SCREEN_WIDTH - 100
     upload_box_y = solve_button_y
     show_solution, upload_image_flag = False, False
@@ -50,7 +50,7 @@ def main() -> None:
         
         # Handle uploading and processing button being clicked
         if upload_image_flag is True:
-            upload_and_process_image(sudoku)
+            upload_and_process_image(game_screen, sudoku)
         
         # Finish drawing sudoku board
         draw_numbers(game_screen, sudoku.get_board())
@@ -61,6 +61,7 @@ def main() -> None:
             draw_incorrect_input(game_screen)
 
         pygame.display.update()
+        show_solution, upload_image_flag = False, False
 
 if __name__ == "__main__":
     main()
