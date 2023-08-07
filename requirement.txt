@@ -1,0 +1,4 @@
+Name, Version used during development
+opencv, 4.8.0
+pygame, 2.5.0
+numpy, 1.25.2

@@ -1,6 +1,6 @@
-import pygame, sys, copy
+import pygame
 from sudoku import Sudoku
-from tkinter import filedialog, messagebox, Tk
+from tkinter import filedialog, messagebox
 from typing import List
 
 # Constants for the game window
@@ -113,7 +113,7 @@ def draw_incorrect_input(game_screen: pygame.display) -> None:
     pygame.draw.line(game_screen, INCORRECT_COLOR, (0, SCREEN_HEIGHT - 50), (50, SCREEN_HEIGHT), 3)
     pygame.draw.line(game_screen, INCORRECT_COLOR, (0, SCREEN_HEIGHT), (50, SCREEN_HEIGHT - 50), 3)
 
-def process_image(game_screen: pygame.display, sudoku: Sudoku) -> None:
+def upload_and_process_image(game_screen: pygame.display, sudoku: Sudoku) -> None:
     """Prompts user to upload an image file. Stores the file path of the image and processes
     the image and converts it into a nested list that will be used to update the board of
     Sudoku object.
@@ -123,5 +123,8 @@ def process_image(game_screen: pygame.display, sudoku: Sudoku) -> None:
         sudoku: An instance of the Sudoku class.
     """
     filename = filedialog.askopenfilename()
+    if filename == "":
+        return
+
     if filename[-3:] not in ["png", "jpg", "jpeg"]:
         messagebox.showinfo("Invalid file.", "Please upload a .png or .jpg file.")
