@@ -23,8 +23,6 @@ or .jpg/jpeg image of a Sudoku board. The image will be processed and the neural
 from the Sudoku board. The resulting board will be displayed on the GUI.
 
 
-<img width="338" alt="image" src="https://github.com/karmp/sudoku-solver/assets/62309862/a806bbb0-9c96-4d7f-ad0f-d90ffdc4860d">
-
 # Important Note with Uploading Image
 It is not recommended to manually solve the Sudoku board after uploading an image as the solution to the uploaded board
 will not be generate until the user fixes any issues with the numbers on the board and presses the Solve Board button.
