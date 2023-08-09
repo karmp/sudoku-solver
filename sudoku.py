@@ -1,11 +1,12 @@
+"""This module contains the Sudoku class which is used to repereset a Sudoku Board."""
+
 from typing import List, Optional
 import copy
 
 
 class Sudoku:
     """Sudoku class that stores a Sudoku board. Member functions
-    can be called on to solve the stored board, print the board, get the
-    board, or replace the board.
+    can be called to perform some action on the stored board.
     """
     
     def __init__(self, board: Optional[List[List[int]]] = None):
@@ -55,7 +56,7 @@ class Sudoku:
                     print(str(board[i][j]) + " ", end="")
         print(f"{'-' * 21}")
 
-    def _find_empty_cell(self, board: Optional[List[List[int]]] = None) -> tuple | None:
+    def _find_empty_cell(self, board: Optional[List[List[int]]] = None) -> tuple or None:
         """Finds the postion of an empty cell on the board if it exists.
         
         Args:
@@ -110,7 +111,7 @@ class Sudoku:
                     return False
         return True
 
-    def solve_board(self, board: Optional[List[List[int]]] = None) -> List[List[int]] | bool:
+    def solve_board(self, board: Optional[List[List[int]]] = None) -> List[List[int]] or bool:
         """Solves the board using backtracking algorithm. Updates the member variable
         with the solved board.
 
@@ -147,16 +148,29 @@ class Sudoku:
         return self._board
 
     def set_board(self, board: List[List[int]]) -> None:
-        """Sets the Sudoku board. Must be a 9x9 Sudoku board."""
+        """Sets the Sudoku board. Must be a 9x9 Sudoku board.
+        
+        Args:
+            board: nested list of integers representing a Sudoku board.
+        """
         self._board = board
 
     def place_value(self, row_index: int, col_index: int, num: int) -> None:
-        """Places a value on the board."""
+        """Places a value on the board.
+        
+        Args:
+            row_index: index of the row to insert the value.
+            col_index: index of the col to insert the value.
+        """
         self._board[row_index][col_index] = num
     
     def get_solved_board(self) -> List[List[int]]:
         "Returns solved Sudoku board."
         return self._solved_board
+    
+    def update_solved_board(self) -> None:
+        """Updates solution to Sudoku board."""
+        self._solved_board = self.solve_board(copy.deepcopy(self._board))
 
     
 if __name__ == "__main__":

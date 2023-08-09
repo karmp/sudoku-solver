@@ -5,15 +5,19 @@ board from an image.
 
 import cv2, torch
 import numpy as np
-import os
-from mnist_cnn import model
+from pathlib import Path
+from .mnist_cnn import model, transform
+from typing import List
 
 
 def extract_board_image(img_path: str) -> np.ndarray:
     """Extracts a Sudoku board from the image pass as a path.
     
     Args:
-        img_path: String to an image path
+        img_path: path to image.
+    
+    Returns:
+        Processed image as an numpy array.
     """
     img = cv2.imread(img_path)
     gray_scaled = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
@@ -58,7 +62,7 @@ def extract_board_image(img_path: str) -> np.ndarray:
     direct_view = cv2.flip(direct_view, flipCode=1)
 
     # Uncomment to visualize before and after imgs
-    # NOTE: The execution of the program will be stopped until the shown images are exited
+    # NOTE: The execution of the program will be stopped until the shown images are closed
     # cv2.drawContours(img, [sudoku_board], -1 , 255, 2)
     # cv2.imshow('Before', img)
     # cv2.imshow('After', direct_view)
@@ -66,20 +70,71 @@ def extract_board_image(img_path: str) -> np.ndarray:
     # cv2.destroyAllWindows()
     return direct_view
 
-def extract_sudoku(img_path: str):
+def predict_number(cell: np.array, model: torch.nn.Sequential, device: str) -> int:
+    """Predicts a number from an image using a trained CNN model.
+    
+    Args:
+        cell: current cell on Sudoku image.
+        model: trained CNN model.
+        device: device name that torch will use.
+    
+    Returns:
+        A number representing the prediction made by the model.
+    """
+    cell = cv2.bitwise_not(cv2.resize(cell, (28, 28)))
+    cell = (255 - np.expand_dims(np.array(cell), -1)) / 255
+    with torch.no_grad():
+        pred = model(torch.unsqueeze(transform(cell), axis=0).float().to(device))
+        pred = torch.argmax(pred, dim=1).item()
+    # print(pred, end=" ")
+    # cv2.imshow('Cell', cell)
+    # cv2.waitKey(0) 
+    # cv2.destroyAllWindows()
+    return pred
+
+def get_digits(sudoku_img: np.array, model: torch.nn.Sequential, 
+               device: str) -> List[List[int]]:
+    """Extracts the numbers on a Sudoku board image.
+
+    Args:
+        sudoku_img: numpy array representing the image.
+        model: trained CNN model.
+        deivce: device name that torch will use.
+    
+    Returns:
+        A nested list representing a Sudoku board.
+    """
+    board = [[0 for i in range(9)] for j in range(9)]
+    for i in range(9):
+        for j in range(9):
+            cur_cell = sudoku_img[i * 50: (i + 1) * 50, j * 50: (j + 1) * 50]
+            if cur_cell.sum() > 120000: # Ignore empty cells
+                board[i][j] = predict_number(cur_cell, model, device)
+    return board
+
+def get_sudoku(img_path: str) -> List[List[int]]:
+    """Gets Sudoku board from an image. Returns a nested list of integers.
+    
+    Args:
+        img_path: path to image.
+    
+    Returns:
+        Nested list of integers representing a Sudoku Board.
+    """
+    img_path = str(Path(img_path))
     if torch.cuda.is_available():
         device = torch.device("cuda:0")
     else:
         device = torch.device("cpu")
-        print("No Cuda Available")
+        # print("No Cuda Available")
+    
     mnist_model = model.to(device)
-    mnist_model.load_state_dict(torch.load("img_processing\\trained_mnist_cnn.pth"))
+    mnist_model.load_state_dict(torch.load(Path("img_processing", "trained_mnist_cnn.pth")))
     mnist_model.eval()
-    print("Done loading")
-
+    sudoku = extract_board_image(img_path)
+    sudoku = cv2.resize(sudoku, (450, 450))
+    return get_digits(sudoku, mnist_model, device)
 
 if __name__ == "__main__":
-    TEST_PATH1 = "rsrc\\test.png"
-    TEST_PATH2 = "rsrc\\test2.png"
-    extract_board_image(TEST_PATH2)
-    extract_sudoku(TEST_PATH1)
+    TEST_PATH = str(Path("rsrc", "test.png"))
+    get_sudoku(TEST_PATH)
